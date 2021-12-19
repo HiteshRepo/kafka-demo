@@ -3,9 +3,11 @@ package main
 import (
 	"flag"
 	"github.com/demos/kafka/config"
+	"github.com/demos/kafka/consumer"
 	"github.com/demos/kafka/router"
 	"log"
 	"os"
+	"strings"
 )
 
 const (
@@ -31,12 +33,12 @@ func main() {
 		return
 	}
 
-	producerConfig := appConfig.GetProducerConfig()
+	serverConfig := appConfig.GetServerConfig()
 	topicConfig := appConfig.GetTopicsConfig()
+	brokers := strings.Split(serverConfig.Brokers, ";")
+	go consumer.StartConsumer(brokers, topicConfig.Name, appConfig.GetConsumerConfig())
 
-
-
-	app, err := router.InitRouter(topicConfig, producerConfig)
+	app, err := router.InitRouter(appConfig)
 	app.Listen(":3000")
 }
 

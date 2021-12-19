@@ -13,10 +13,11 @@ type Comment struct {
 
 type commentsHandler struct {
 	topic topics.Topic
+	brokers []string
 }
 
-func NewCommentsHandler(topic topics.Topic) commentsHandler {
-	return commentsHandler{topic: topic}
+func NewCommentsHandler(topic topics.Topic, brokers []string) commentsHandler {
+	return commentsHandler{topic: topic, brokers: brokers}
 }
 
 func (h commentsHandler) CreateComment(c *fiber.Ctx) error {
@@ -33,7 +34,7 @@ func (h commentsHandler) CreateComment(c *fiber.Ctx) error {
 
 	// convert body into bytes and send it to kafka
 	cmtInBytes, err := json.Marshal(cmt)
-	err = h.topic.Publish(cmtInBytes)
+	err = h.topic.Publish(cmtInBytes, h.brokers)
 	if err != nil {
 		if err = sendResponse(c ,false, "error while publishing comment", cmt); err != nil {
 			return err

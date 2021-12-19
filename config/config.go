@@ -7,11 +7,14 @@ import (
 	"github.com/spf13/viper"
 )
 
+type ServerConfig struct {
+	Brokers string `mapstructure:"brokers"`
+}
+
 type ProducerConfig struct {
-	Brokers       string `mapstructure:"brokers"`
-	ReturnSuccess bool   `mapstructure:"returnSuccesses"`
-	RetryCount    int    `mapstructure:"retryCount"`
-	RequiredAcks  int    `mapstructure:"requiredAcks"`
+	ReturnSuccess bool `mapstructure:"returnSuccesses"`
+	RetryCount    int  `mapstructure:"retryCount"`
+	RequiredAcks  int  `mapstructure:"requiredAcks"`
 }
 
 type TopicsConfig struct {
@@ -20,14 +23,22 @@ type TopicsConfig struct {
 	ValueSerializer string `mapstructure:"valueSerializer"`
 }
 
+type ConsumerConfig struct {
+	Offset int `mapstructure:"offset"`
+}
+
 type AppConfig interface {
 	GetProducerConfig() *ProducerConfig
 	GetTopicsConfig() *TopicsConfig
+	GetServerConfig() *ServerConfig
+	GetConsumerConfig() *ConsumerConfig
 }
 
 type appConfig struct {
 	ProducerConfig ProducerConfig `mapstructure:"producer"`
 	TopicsConfig   TopicsConfig   `mapstructure:"topic"`
+	ServerConfig   ServerConfig   `mapstructure:"app"`
+	ConsumerConfig ConsumerConfig `mapstructure:"app"`
 }
 
 func (a *appConfig) GetProducerConfig() *ProducerConfig {
@@ -36,6 +47,14 @@ func (a *appConfig) GetProducerConfig() *ProducerConfig {
 
 func (a *appConfig) GetTopicsConfig() *TopicsConfig {
 	return &a.TopicsConfig
+}
+
+func (a *appConfig) GetServerConfig() *ServerConfig {
+	return &a.ServerConfig
+}
+
+func (a *appConfig) GetConsumerConfig() *ConsumerConfig {
+	return &a.ConsumerConfig
 }
 
 func LoadConfig(reader io.Reader) (AppConfig, error) {

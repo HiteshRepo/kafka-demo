@@ -6,7 +6,6 @@ import (
 	"github.com/demos/kafka/producer"
 	"gopkg.in/Shopify/sarama.v1"
 	"log"
-	"strings"
 )
 
 type Topic struct {
@@ -21,8 +20,8 @@ func GetNewTopic(cnf *config.TopicsConfig, prCnf *config.ProducerConfig) Topic {
 	}
 }
 
-func (t Topic) IsTopicAvailable() bool {
-	client, err := sarama.NewClient(strings.Split(t.prCnf.Brokers, ";"), sarama.NewConfig())
+func (t Topic) IsTopicAvailable(brokers []string) bool {
+	client, err := sarama.NewClient(brokers, sarama.NewConfig())
 	defer client.Close()
 
 	if err != nil {
@@ -45,8 +44,8 @@ func (t Topic) IsTopicAvailable() bool {
 	return false
 }
 
-func (t Topic) Publish(message []byte) error {
-	p, err := producer.ConnectProducer(t.prCnf)
+func (t Topic) Publish(message []byte, brokers []string) error {
+	p, err := producer.ConnectProducer(t.prCnf ,brokers)
 	if err != nil {
 		return err
 	}

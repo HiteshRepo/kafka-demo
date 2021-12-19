@@ -1,5 +1,7 @@
-producer:
+app:
   brokers: "127.0.0.1:9092"
+
+producer:
   returnSuccesses: true
   retryCount: 5
   requiredAcks: -1
@@ -8,4 +10,7 @@ topic:
   name: "first_topic"
   keySerializer: "string"
   valueSerializer: "string"
+
+consumer:
+  offset: -2
 
