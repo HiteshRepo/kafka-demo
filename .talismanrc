@@ -1,0 +1,10 @@
+fileignoreconfig:
+- filename: go.sum
+  checksum: cc583f5638ebb40be8a83494cc8ae6d0c08a12e175b5541948a06452e427f0c4
+- filename: main.go
+  checksum: 6efaf416a296a250c517f1f0f7c52051b926a4b72a4235228c76971128a602b9
+- filename: config/config.go
+  checksum: 20c6ef739e7c1374443489da12e5cb78d53e3fceb22371adfb0aaf20dfacec34
+- filename: config/config.yaml
+  checksum: 8eb9bf2cd32d419e8b10ae4d11908f3e486c64904a65ff603d53710e2a40aa28
+version: ""
