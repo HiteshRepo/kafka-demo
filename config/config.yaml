@@ -14,3 +14,9 @@ topic:
 consumer:
   offset: -2
 
+group:
+  name: "my-first-group"
+  version: 3.0.0
+  assignor: "roundrobin"
+  oldest: true
+

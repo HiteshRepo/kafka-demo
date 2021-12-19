@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"github.com/demos/kafka/config"
-	"github.com/demos/kafka/consumer"
+	"github.com/demos/kafka/consumerGroup"
 	"github.com/demos/kafka/router"
 	"log"
 	"os"
@@ -36,7 +36,8 @@ func main() {
 	serverConfig := appConfig.GetServerConfig()
 	topicConfig := appConfig.GetTopicsConfig()
 	brokers := strings.Split(serverConfig.Brokers, ";")
-	go consumer.StartConsumer(brokers, topicConfig.Name, appConfig.GetConsumerConfig())
+	//go consumer.StartConsumer(brokers, topicConfig.Name, appConfig.GetConsumerConfig())
+	go consumerGroup.StartConsumerGroup(brokers, topicConfig.Name, appConfig.GetConsumerGroupConfig())
 
 	app, err := router.InitRouter(appConfig)
 	app.Listen(":3000")
