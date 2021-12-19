@@ -6,6 +6,8 @@ import (
 	"github.com/demos/kafka/producer"
 	"gopkg.in/Shopify/sarama.v1"
 	"log"
+	"os"
+	"time"
 )
 
 type Topic struct {
@@ -45,7 +47,7 @@ func (t Topic) IsTopicAvailable(brokers []string) bool {
 }
 
 func (t Topic) Publish(message []byte, brokers []string) error {
-	p, err := producer.ConnectProducer(t.prCnf ,brokers)
+	p, err := producer.ConnectProducer(t.prCnf, brokers)
 	if err != nil {
 		return err
 	}
@@ -62,4 +64,31 @@ func (t Topic) Publish(message []byte, brokers []string) error {
 	}
 	fmt.Printf("Message is stored in topic(%s)/partition(%d)/offset(%d)\n", t.cnf.Name, partition, offset)
 	return nil
+}
+
+func (t Topic) PublishAsync(messages [][]byte, brokers []string, signals chan os.Signal) {
+	p, err := producer.ConnectAsyncProducer(t.prCnf, brokers)
+	if err != nil {
+		log.Printf("unable to send message asynchronously: %v", err)
+	}
+	defer p.Close()
+
+	for _, message := range messages {
+		time.Sleep(time.Second)
+		select {
+		case p.Input() <- &sarama.ProducerMessage{Topic: t.cnf.Name, Value: ValueEncoder(message, t.cnf.ValueSerializer)}:
+			log.Println("New Message produced")
+		case resMsg, ok := <-p.Successes():
+			if ok {
+				fmt.Printf("Message is stored in topic(%s)/partition(%d)/offset(%d)\n", t.cnf.Name, resMsg.Partition, resMsg.Partition)
+			}
+		case errMsg, ok := <-p.Errors():
+			if ok {
+				fmt.Printf("Failed to publish message(%s) in topic(%s) : %v\n", t.cnf.Name, errMsg.Msg.Value, errMsg.Err)
+			}
+		case <-signals:
+			p.AsyncClose()
+			return
+		}
+	}
 }

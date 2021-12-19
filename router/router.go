@@ -16,12 +16,14 @@ func InitRouter(appConfig config.AppConfig) (*fiber.App, error) {
 	api := app.Group("/api/v1")
 	brokers := strings.Split(appConfig.GetServerConfig().Brokers, ";")
 	commentsHandler, err := getCommentsHandler(appConfig.GetTopicsConfig(), appConfig.GetProducerConfig(), brokers)
+	multipleCommentsHandler, err := getMultipleCommentsHandler(appConfig.GetTopicsConfig(), appConfig.GetProducerConfig(), brokers)
 	if err != nil {
 		log.Println("invalid topic")
 		return nil, err
 	}
 
 	api.Post("/comment", commentsHandler)
+	api.Post("/comments", multipleCommentsHandler)
 
 	return app, nil
 }
@@ -34,4 +36,14 @@ func getCommentsHandler(topicConfig *config.TopicsConfig, producerConfig *config
 	}
 
 	return handler.NewCommentsHandler(topic, brokers).CreateComment, nil
+}
+
+func getMultipleCommentsHandler(topicConfig *config.TopicsConfig, producerConfig *config.ProducerConfig, brokers []string) (fiber.Handler, error) {
+	topic := topics.GetNewTopic(topicConfig, producerConfig)
+
+	if !topic.IsTopicAvailable(brokers) {
+		return nil, errors.New(fmt.Sprintf("invalid topic: %v", topicConfig.Name))
+	}
+
+	return handler.NewCommentsHandler(topic, brokers).CreateComments, nil
 }

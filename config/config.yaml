@@ -12,7 +12,7 @@ topic:
   valueSerializer: "string"
 
 consumer:
-  offset: -2
+  offset: -1
 
 group:
   name: "my-first-group"
