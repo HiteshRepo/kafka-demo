@@ -55,6 +55,7 @@ func (t Topic) Publish(message []byte, brokers []string) error {
 
 	msg := &sarama.ProducerMessage{
 		Topic: t.cnf.Name,
+		Key: KeyEncoder([]byte("id_1"),t.cnf.KeySerializer), // not required since single comment is published
 		Value: ValueEncoder(message, t.cnf.ValueSerializer),
 	}
 
@@ -73,10 +74,14 @@ func (t Topic) PublishAsync(messages [][]byte, brokers []string, signals chan os
 	}
 	defer p.Close()
 
-	for _, message := range messages {
+	for i, message := range messages {
 		time.Sleep(time.Second)
+		msg := &sarama.ProducerMessage{
+			Topic: t.cnf.Name,
+			Key: KeyEncoder([]byte(fmt.Sprintf("id_%s", i)), t.cnf.KeySerializer), // to send data to same partition based on key, in here all keys are different,so no message will go to same partition
+			Value: ValueEncoder(message, t.cnf.ValueSerializer)}
 		select {
-		case p.Input() <- &sarama.ProducerMessage{Topic: t.cnf.Name, Value: ValueEncoder(message, t.cnf.ValueSerializer)}:
+		case p.Input() <- msg:
 			log.Println("New Message produced")
 		case resMsg, ok := <-p.Successes():
 			if ok {

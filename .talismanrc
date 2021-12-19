@@ -7,4 +7,6 @@ fileignoreconfig:
   checksum: 20c6ef739e7c1374443489da12e5cb78d53e3fceb22371adfb0aaf20dfacec34
 - filename: config/config.yaml
   checksum: 8eb9bf2cd32d419e8b10ae4d11908f3e486c64904a65ff603d53710e2a40aa28
+- filename: topics/topics.go
+  checksum: 9fb06208642ab31ae42e147e7faade12893484fdc1191f409c0e32270835945a
 version: ""
