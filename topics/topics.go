@@ -9,19 +9,19 @@ import (
 	"strings"
 )
 
-type topic struct {
+type Topic struct {
 	cnf   *config.TopicsConfig
 	prCnf *config.ProducerConfig
 }
 
-func GetNewTopic(cnf *config.TopicsConfig, prCnf *config.ProducerConfig) topic {
-	return topic{
+func GetNewTopic(cnf *config.TopicsConfig, prCnf *config.ProducerConfig) Topic {
+	return Topic{
 		cnf:   cnf,
 		prCnf: prCnf,
 	}
 }
 
-func (t topic) IsTopicAvailable() bool {
+func (t Topic) IsTopicAvailable() bool {
 	client, err := sarama.NewClient(strings.Split(t.prCnf.Brokers, ";"), sarama.NewConfig())
 	defer client.Close()
 
@@ -45,7 +45,7 @@ func (t topic) IsTopicAvailable() bool {
 	return false
 }
 
-func (t topic) Publish(message []byte) error {
+func (t Topic) Publish(message []byte) error {
 	p, err := producer.ConnectProducer(t.prCnf)
 	if err != nil {
 		return err

@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"github.com/demos/kafka/config"
-	"github.com/demos/kafka/topics"
+	"github.com/demos/kafka/router"
 	"log"
 	"os"
 )
@@ -34,16 +34,11 @@ func main() {
 	producerConfig := appConfig.GetProducerConfig()
 	topicConfig := appConfig.GetTopicsConfig()
 
-	topic := topics.GetNewTopic(topicConfig, producerConfig)
 
-	if !topic.IsTopicAvailable() {
-		log.Println("invalid topic")
-		return
-	}
 
-	err = topic.Publish([]byte("hello"))
-	if err != nil {
-		log.Printf("error while publishing topic to kafka: %v", err)
-		return
-	}
+	app, err := router.InitRouter(topicConfig, producerConfig)
+	app.Listen(":3000")
 }
+
+
+
