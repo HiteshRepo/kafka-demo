@@ -9,4 +9,6 @@ fileignoreconfig:
   checksum: 8eb9bf2cd32d419e8b10ae4d11908f3e486c64904a65ff603d53710e2a40aa28
 - filename: topics/topics.go
   checksum: 9fb06208642ab31ae42e147e7faade12893484fdc1191f409c0e32270835945a
+- filename: readme.md
+  checksum: 4779a716704cb9847b99a5ee5da27b7436df247b9113ac7791501b7bae59ce64
 version: ""
